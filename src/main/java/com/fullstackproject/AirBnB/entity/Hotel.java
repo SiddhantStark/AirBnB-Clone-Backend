@@ -23,6 +23,9 @@ public class Hotel {
 
     private String city;
 
+    @Column(nullable = false)
+    private Boolean active;
+
     @Column(columnDefinition = "TEXT[]")
     private String[] photos;
 
@@ -37,4 +40,9 @@ public class Hotel {
 
     @Embedded
     private HostelContactInfo contactInfo;
+
+    @ManyToOne
+    private User owner;
+
+
 }
