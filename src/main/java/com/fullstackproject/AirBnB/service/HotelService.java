@@ -1,6 +1,7 @@
 package com.fullstackproject.AirBnB.service;
 
 import com.fullstackproject.AirBnB.dto.HotelDto;
+import com.fullstackproject.AirBnB.dto.HotelInfoDto;
 import com.fullstackproject.AirBnB.entity.Hotel;
 
 public interface HotelService {
@@ -10,4 +11,5 @@ public interface HotelService {
     void deleteHotelById(Long Id);
 
     void activateHotel(Long id);
+    HotelInfoDto getHotelInfoById(Long hotelId);
 }

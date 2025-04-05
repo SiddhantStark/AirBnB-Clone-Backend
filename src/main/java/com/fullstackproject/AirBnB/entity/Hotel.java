@@ -1,5 +1,6 @@
 package com.fullstackproject.AirBnB.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -42,7 +44,10 @@ public class Hotel {
     private HostelContactInfo contactInfo;
 
     @ManyToOne
+    @JsonIgnore
     private User owner;
 
-
+    @OneToMany(mappedBy = "hotel")
+    @JsonIgnore
+    private List<Room> rooms;
 }
