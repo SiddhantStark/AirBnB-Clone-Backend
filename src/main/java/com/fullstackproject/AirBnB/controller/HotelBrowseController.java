@@ -2,6 +2,7 @@ package com.fullstackproject.AirBnB.controller;
 
 import com.fullstackproject.AirBnB.dto.HotelDto;
 import com.fullstackproject.AirBnB.dto.HotelInfoDto;
+import com.fullstackproject.AirBnB.dto.HotelPriceDto;
 import com.fullstackproject.AirBnB.dto.HotelSearchRequest;
 import com.fullstackproject.AirBnB.service.HotelService;
 import com.fullstackproject.AirBnB.service.InventoryService;
@@ -21,8 +22,8 @@ public class HotelBrowseController {
     private final InventoryService inventoryService;
     private final HotelService hotelService;
     @GetMapping("/search")
-    public ResponseEntity<Page<HotelDto>> searchHotels(@RequestBody HotelSearchRequest hotelSearchRequest){
-        Page<HotelDto> page = inventoryService.searchHotels(hotelSearchRequest);
+    public ResponseEntity<Page<HotelPriceDto>> searchHotels(@RequestBody HotelSearchRequest hotelSearchRequest){
+        Page<HotelPriceDto> page = inventoryService.searchHotels(hotelSearchRequest);
         return ResponseEntity.ok(page);
     }
 
