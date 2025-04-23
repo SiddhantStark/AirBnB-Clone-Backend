@@ -43,7 +43,7 @@ public class Hotel {
     @Embedded
     private HostelContactInfo contactInfo;
 
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JsonIgnore
     private User owner;
 

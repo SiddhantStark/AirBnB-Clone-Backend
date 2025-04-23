@@ -1,15 +1,13 @@
 package com.fullstackproject.AirBnB.dto;
 
-import com.fullstackproject.AirBnB.entity.enums.Gender;
 import lombok.Data;
 
 import java.time.LocalDate;
+import com.fullstackproject.AirBnB.entity.enums.Gender;
 
 @Data
-public class UserDto {
-    private Long id;
-    private String email;
+public class ProfileUpdateRequestDto {
     private String name;
-    private Gender gender;
     private LocalDate dateOfBirth;
+    private Gender gender;
 }

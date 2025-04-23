@@ -1,5 +1,6 @@
 package com.fullstackproject.AirBnB.entity;
 
+import com.fullstackproject.AirBnB.entity.enums.Gender;
 import com.fullstackproject.AirBnB.entity.enums.Role;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
@@ -24,6 +26,11 @@ public class User implements UserDetails {
 
     private String name;
 
+    private LocalDate dateOfBirth;
+
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     @Column(unique = true, nullable = true)
     private String email;
 
@@ -37,14 +44,13 @@ public class User implements UserDetails {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return Objects.equals(id, user.id);
+        if (!(o instanceof User user)) return false;
+        return Objects.equals(getId(), user.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hashCode(getId());
     }
 
     @Override

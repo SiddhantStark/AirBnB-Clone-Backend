@@ -53,7 +53,7 @@ public class RoomServiceImplementation implements RoomService{
         Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel not found with id: " + hotelId));
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if(user.equals(hotel.getOwner())){
+        if(!user.equals(hotel.getOwner())){
             throw new UnauthorisedException("This user does not own this hotel with ID: " + hotelId);
         }
         return hotel.getRooms().stream().map((element) -> modelMapper.map(element, RoomDto.class)).collect(Collectors.toList());
@@ -80,5 +80,25 @@ public class RoomServiceImplementation implements RoomService{
         inventoryService.deleteAllInventories(room);
 
         roomRepository.deleteById(roomId);
+    }
+
+    @Override
+    @Transactional
+    public RoomDto updateRoomByID(Long hotelId, RoomDto roomDto, Long roomId) {
+        Hotel hotel = hotelRepository.findById(hotelId).orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: " + hotelId));
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if(!user.equals(hotel.getOwner())){
+            throw new UnauthorisedException("This user does not own this hotel with ID: " + roomId);
+        }
+
+        Room room = roomRepository.findById(roomId).orElseThrow(() -> new ResourceNotFoundException("Room not found with ID: " + roomId));
+        modelMapper.map(roomDto, room);
+        room.setId(roomId);
+        room.setHotel(hotel);
+
+//        If Price or Inventory is updated, then update the inventory for this room
+        room = roomRepository.save(room);
+        return modelMapper.map(room, RoomDto.class);
     }
 }
