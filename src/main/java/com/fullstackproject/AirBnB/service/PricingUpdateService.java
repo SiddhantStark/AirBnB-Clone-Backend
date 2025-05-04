@@ -16,6 +16,7 @@ import com.fullstackproject.AirBnB.entity.Hotel;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -73,7 +74,7 @@ public class PricingUpdateService {
         dailyMinPrices.forEach((date, price) -> {
             HotelMinPrice hotelPrice = hotelMinPriceRepository.findByHotelAndDate(hotel, date)
                     .orElse(new HotelMinPrice(hotel, date));
-            hotelPrice.setPrice(price);
+            hotelPrice.setPrice(price.setScale(2, RoundingMode.CEILING));
             hotelPrices.add(hotelPrice);
         });
 
@@ -84,7 +85,7 @@ public class PricingUpdateService {
     private void updateInventoryPrices(List<Inventory> inventoryList){
         inventoryList.forEach(inventory -> {
             BigDecimal dynamicPrice = pricingService.calculateDynamicPricingStrategy(inventory);
-            inventory.setPrice(dynamicPrice);
+            inventory.setPrice(dynamicPrice.setScale(2, RoundingMode.CEILING));
         });
         inventoryRepository.saveAll(inventoryList);
     }

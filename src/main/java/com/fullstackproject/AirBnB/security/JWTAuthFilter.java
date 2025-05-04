@@ -18,6 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
+import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -31,6 +32,15 @@ public class JWTAuthFilter extends OncePerRequestFilter {
     @Autowired
     @Qualifier("handlerExceptionResolver")
     private HandlerExceptionResolver handlerExceptionResolver;
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String requestPath = request.getServletPath();
+
+        // Define public routes (must match what you configured in SecurityFilterChain)
+        List<String> publicRoutes = List.of("/auth/", "/hotels/", "/v3/api-docs", "/swagger-ui", "/webhook");
+        return publicRoutes.stream().anyMatch(requestPath::startsWith);
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

@@ -31,6 +31,7 @@ public class HotelServiceImplementation implements HotelService{
     private final ModelMapper modelMapper;
     private final InventoryService inventoryService;
     private final RoomRepository roomRepository;
+    private final PricingUpdateService pricingUpdateService;
     @Override
     public HotelDto getHotelById(Long id) {
         log.info("Getting hotel with id: {}", id);
@@ -81,7 +82,6 @@ public class HotelServiceImplementation implements HotelService{
     public void activateHotel(Long id) {
         log.info("Activating the hotel with Id" + id);
         Hotel hotel = hotelRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Hotel not found with id: " + id));
-        hotel.setActive(true);
 //        create inventories for all the rooms for this hotel
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -93,6 +93,10 @@ public class HotelServiceImplementation implements HotelService{
         for(Room room: hotel.getRooms()) {
             inventoryService.initializeRoomForAYear(room);
         }
+
+        hotel.setActive(true);
+        hotelRepository.save(hotel);
+        pricingUpdateService.updateHotelPrices(hotel);
     }
 
     @Override

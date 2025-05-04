@@ -23,6 +23,7 @@ public interface BookingService {
     void cancelPayments(Long bookingId);
 
     String getBookingStatus(Long bookingId);
+    BookingDto getBookingById(Long bookingId);
 
     List<BookingDto> getAllBookingsByHotelId(Long hotelID) throws AccessDeniedException;
 

@@ -27,6 +27,7 @@ public class RoomServiceImplementation implements RoomService{
     private final HotelRepository hotelRepository;
     private final ModelMapper modelMapper;
     private final InventoryService inventoryService;
+    private final PricingUpdateService pricingUpdateService;
     @Override
     public RoomDto createNewRoom(Long hotelId, RoomDto roomDto) {
         log.info("Creating a new room in Hotel with Id: " + hotelId);
@@ -43,6 +44,11 @@ public class RoomServiceImplementation implements RoomService{
         room = roomRepository.save(room);
 
 //        TODO: create inventory as soon as room is created and if hotel is active
+        //        if (hotel.getActive()) {
+//            inventoryService.initializeRoomForAYear(room);
+//        }
+        inventoryService.initializeRoomForAYear(room);
+        pricingUpdateService.updateHotelPrices(hotel);
 
         return modelMapper.map(room, RoomDto.class);
     }
