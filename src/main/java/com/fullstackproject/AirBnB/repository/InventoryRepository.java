@@ -1,5 +1,6 @@
 package com.fullstackproject.AirBnB.repository;
 
+import com.fullstackproject.AirBnB.dto.RoomPriceDto;
 import com.fullstackproject.AirBnB.entity.Hotel;
 import com.fullstackproject.AirBnB.entity.Inventory;
 import com.fullstackproject.AirBnB.entity.Room;
@@ -142,4 +143,28 @@ public interface  InventoryRepository extends JpaRepository<Inventory, Long> {
                          @Param("closed") boolean closed,
                          @Param("surgeFactor")BigDecimal surgeFactor
                          );
+
+    @Query("""
+       SELECT new com.fullstackproject.AirBnB.dto.RoomPriceDto(
+            i.room,
+            CASE
+                WHEN COUNT(i) = :dateCount THEN AVG(i.price)
+                ELSE NULL
+            END
+        )
+       FROM Inventory i
+       WHERE i.hotel.id = :hotelId
+             AND i.date BETWEEN :startDate AND :endDate
+             AND (i.totalCount - i.bookedCount) >= :roomsCount
+             AND i.closed = false
+       GROUP BY i.room
+       """)
+    List<RoomPriceDto> findRoomAveragePrice(
+            @Param("hotelId") Long hotelId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("roomsCount") Long roomsCount,
+            @Param("dateCount") Long dateCount
+    );
+
 }

@@ -5,6 +5,7 @@ import com.fullstackproject.AirBnB.dto.LoginRequestDto;
 import com.fullstackproject.AirBnB.dto.SignUpRequestDto;
 import com.fullstackproject.AirBnB.dto.UserDto;
 import com.fullstackproject.AirBnB.security.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,6 +40,19 @@ public class AuthController {
 
         httpServletResponse.addCookie(cookie);
         return ResponseEntity.ok(new LoginRequestDto(tokens[0]));
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "Logout request", tags = {"Auth"})
+    public ResponseEntity<Void> logout(HttpServletResponse response, HttpServletRequest request) {
+        // Clear the refreshToken cookie
+        Cookie cookie = new Cookie("refreshToken", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // Expire immediately
+        cookie.setHttpOnly(true);
+        response.addCookie(cookie);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/refresh")
