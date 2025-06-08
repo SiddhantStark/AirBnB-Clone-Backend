@@ -1,5 +1,6 @@
 package com.fullstackproject.AirBnB.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fullstackproject.AirBnB.entity.enums.Gender;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Guest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

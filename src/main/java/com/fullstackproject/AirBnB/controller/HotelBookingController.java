@@ -1,9 +1,11 @@
 package com.fullstackproject.AirBnB.controller;
 
 import com.fullstackproject.AirBnB.dto.BookingDto;
+import com.fullstackproject.AirBnB.dto.BookingPaymentInitResponseDto;
 import com.fullstackproject.AirBnB.dto.BookingRequest;
 import com.fullstackproject.AirBnB.dto.GuestDto;
 import com.fullstackproject.AirBnB.service.BookingService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,24 +25,29 @@ public class HotelBookingController {
     }
 
     @PostMapping("/{bookingId}/addGuests")
-    public ResponseEntity<BookingDto> addGuests(@PathVariable Long bookingId, @RequestBody List<GuestDto> guestDtoList){
-        return ResponseEntity.ok(bookingService.addGuests(bookingId, guestDtoList));
+    @Operation(summary = "Add guest Ids to the booking", tags = {"Booking Flow"})
+    public ResponseEntity<BookingDto> addGuests(@PathVariable Long bookingId,
+                                                @RequestBody List<Long> guestIdList) {
+        return ResponseEntity.ok(bookingService.addGuests(bookingId, guestIdList));
     }
 
     @PostMapping("/{bookingId}/payments")
-    public ResponseEntity<Map<String, String>> initiatePayment(@PathVariable Long bookingId){
+    @Operation(summary = "Initiate payments flow for the booking", tags = {"Booking Flow"})
+    public ResponseEntity<BookingPaymentInitResponseDto> initiatePayment(@PathVariable Long bookingId) {
         String sessionUrl = bookingService.initiatePayments(bookingId);
-        return ResponseEntity.ok(Map.of("sessionUrl" , sessionUrl));
+        return ResponseEntity.ok(new BookingPaymentInitResponseDto(sessionUrl));
     }
 
     @PostMapping("/{bookingId}/cancel")
-    public ResponseEntity<Void> cancelPayment(@PathVariable Long bookingId){
+    @Operation(summary = "Cancel the booking", tags = {"Booking Flow"})
+    public ResponseEntity<Void> cancelBooking(@PathVariable Long bookingId) {
         bookingService.cancelPayments(bookingId);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{bookingId}/status")
-    public ResponseEntity<Map<String, String>> getBookingStatus(@PathVariable Long bookingId){
-        return ResponseEntity.ok(Map.of("status", bookingService.getBookingStatus(bookingId)));
+    @GetMapping("/{bookingId}")
+    @Operation(summary = "Get the booking by Id", tags = {"Booking Flow"})
+    public ResponseEntity<BookingDto> getBookingById(@PathVariable Long bookingId) {
+        return ResponseEntity.ok(bookingService.getBookingById(bookingId));
     }
 }

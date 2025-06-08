@@ -1,5 +1,6 @@
 package com.fullstackproject.AirBnB.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fullstackproject.AirBnB.entity.enums.Gender;
 import com.fullstackproject.AirBnB.entity.enums.Role;
 import jakarta.persistence.*;
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 @Entity
 @Getter
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Table(name = "app_user")
 public class User implements UserDetails {
     @Id

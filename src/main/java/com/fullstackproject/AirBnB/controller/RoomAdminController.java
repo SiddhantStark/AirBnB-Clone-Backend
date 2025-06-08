@@ -1,8 +1,11 @@
 package com.fullstackproject.AirBnB.controller;
 
+import com.fullstackproject.AirBnB.dto.GuestDto;
 import com.fullstackproject.AirBnB.dto.RoomDto;
 import com.fullstackproject.AirBnB.entity.Room;
+import com.fullstackproject.AirBnB.service.GuestService;
 import com.fullstackproject.AirBnB.service.RoomService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

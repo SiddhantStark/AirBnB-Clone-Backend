@@ -14,7 +14,9 @@ import java.util.Map;
 public interface BookingService {
     BookingDto initalizeBooking(BookingRequest bookingRequest);
 
-    BookingDto addGuests(Long bookingId, List<GuestDto> guestDtoList);
+    BookingDto removeGuests(Long bookingId, List<Long> guestIds);
+
+    BookingDto addGuests(Long bookingId, List<Long> guestDtoList);
 
     String initiatePayments(Long bookingId);
 

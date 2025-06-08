@@ -87,28 +87,27 @@ public class BookingServiceImplementation implements BookingService{
     }
 
     @Override
-    public BookingDto addGuests(Long bookingId, List<GuestDto> guestDtoList) {
-        log.info("Adding guests for booking with ID: {}", bookingId);
-        Booking booking = bookingRepository.findById(bookingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
+    @Transactional
+    public BookingDto addGuests(Long bookingId, List<Long> guestIdList) {
+
+        log.info("Adding guests for booking with id: {}", bookingId);
+
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
+                new ResourceNotFoundException("Booking not found with id: "+bookingId));
         User user = getCurrentUser();
 
-        if(user.equals(booking.getUser())){
-            throw new UnauthorisedException("Booking does not belong to this user with ID: " + user.getId());
+        if (!user.equals(booking.getUser())) {
+            throw new UnauthorisedException("Booking does not belong to this user with id: "+user.getId());
         }
 
-        if(isBookingExpired(booking)){
+        if (isBookingExpired(booking)) {
             throw new IllegalStateException("Booking has already expired");
         }
 
-        if(booking.getBookingStatus() != BookingStatus.RESERVED){
-            throw new IllegalStateException("Booking is not under reserved state, cannot add guests!");
-        }
 
-        for(GuestDto guestDto: guestDtoList){
-            Guest guest = modelMapper.map(guestDto, Guest.class);
-            guest.setUser(getCurrentUser());
-            guest = guestRepository.save(guest);
+        for (Long guestId: guestIdList) {
+            Guest guest = guestRepository.findById(guestId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Guest not found with id: "+guestId));
             booking.getGuests().add(guest);
         }
 
@@ -119,10 +118,60 @@ public class BookingServiceImplementation implements BookingService{
 
     @Override
     @Transactional
+    public BookingDto removeGuests(Long bookingId, List<Long> guestIds) {
+        log.info("Removing guests for booking with ID: {}", bookingId);
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
+        User user = getCurrentUser();
+
+        // Check if the current user is authorized
+        if (!user.equals(booking.getUser())) {
+            throw new UnauthorisedException("Booking does not belong to this user with ID: " + user.getId());
+        }
+
+        // Check if booking is expired
+        if (isBookingExpired(booking)) {
+            throw new IllegalStateException("Booking has already expired");
+        }
+
+        // Check booking status
+        if (booking.getBookingStatus() != BookingStatus.GUEST_ADDED && booking.getBookingStatus() != BookingStatus.RESERVED) {
+            throw new IllegalStateException("Guests cannot be removed at this booking status!");
+        }
+
+        // Remove each guest
+        for (Long guestId : guestIds) {
+            Guest guest = guestRepository.findById(guestId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Guest not found with ID: " + guestId));
+
+            if (!guest.getUser().equals(user)) {
+                throw new UnauthorisedException("You are not authorized to remove guest with ID: " + guestId);
+            }
+
+            if (!booking.getGuests().contains(guest)) {
+                throw new IllegalStateException("Guest with ID: " + guestId + " is not part of this booking");
+            }
+
+            booking.getGuests().remove(guest);
+            guestRepository.delete(guest);
+        }
+
+        // Optionally update booking status if no guests are left
+        if (booking.getGuests().isEmpty()) {
+            booking.setBookingStatus(BookingStatus.RESERVED);
+        }
+
+        booking = bookingRepository.save(booking);
+        return modelMapper.map(booking, BookingDto.class);
+    }
+
+
+    @Override
+    @Transactional
     public String initiatePayments(Long bookingId) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
         User user = getCurrentUser();
-        if(user.equals(booking.getUser())){
+        if(!user.equals(booking.getUser())){
             throw new UnauthorisedException("Booking does not belong to this user with ID: " + user.getId());
         }
 
@@ -139,6 +188,7 @@ public class BookingServiceImplementation implements BookingService{
     @Override
     @Transactional
     public void capturePayment(Event event) {
+        log.info("Capturing payment for event: {}", event.getId());
         if ("checkout.session.completed".equals(event.getType())) {
             Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);
             if (session == null) return;

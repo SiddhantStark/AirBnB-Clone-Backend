@@ -35,7 +35,7 @@ public class RoomServiceImplementation implements RoomService{
 
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if(user.equals(hotel.getOwner())){
+        if(!user.equals(hotel.getOwner())){
             throw new UnauthorisedException("This user does not own this hotel with ID: " + hotelId);
         }
 
