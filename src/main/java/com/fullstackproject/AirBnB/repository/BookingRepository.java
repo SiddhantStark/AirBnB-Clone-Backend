@@ -16,5 +16,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     Optional<Booking> findByPaymentSessionId(String sessionId);
     List<Booking> findByHotel(Hotel hotel);
     List<Booking> findByHotelAndCreatedAtBetween(Hotel hotel, LocalDateTime startTime, LocalDateTime endTime);
-    List<Booking> getByUser(User user);
+    List<Booking> findByUser(User user);
 }

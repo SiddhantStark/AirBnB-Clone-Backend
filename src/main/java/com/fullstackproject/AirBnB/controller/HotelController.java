@@ -62,7 +62,7 @@ public class HotelController {
         return ResponseEntity.ok(bookingService.getAllBookingsByHotelId(hotelID));
     }
 
-    @GetMapping("/{hotelID}/report")
+    @GetMapping("/{hotelID}/reports")
     public ResponseEntity<HotelReportDto> getHotelReport(@PathVariable Long hotelID, @RequestParam(required = false) LocalDate startDate, @RequestParam(required = false) LocalDate endDate) throws AccessDeniedException {
         if (startDate == null) startDate = LocalDate.now().minusMonths(1);
         if (endDate == null) endDate = LocalDate.now();
@@ -70,3 +70,5 @@ public class HotelController {
         return ResponseEntity.ok(bookingService.getHotelReport(hotelID, startDate, endDate));
     }
 }
+
+// netstat -ano | findstr :8080
